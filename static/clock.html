@@ -1,6 +1,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
 
 <script>
+
+    var audioContext = null;
+    function createAudioContext() {
+
+        // Check if the AudioContext is already created
+        if (window.AudioContext || window.webkitAudioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('AudioContext created!');
+        } else {
+            console.log('AudioContext is not supported in this browser');
+        }
+    }
+    // Call createAudioContext() when the webpage is loaded and DOM is available
+    document.addEventListener('DOMContentLoaded', function() {
+        createAudioContext();
+    });
+
     var socket = io();
     socket.on('connect', function() {
         console.log('Connected to Flask server');
@@ -21,7 +38,7 @@
     });
 
     socket.on('audio_file', function(data) {
-        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  
         var source = audioContext.createBufferSource();
         fetch(data.audioURL)
             .then(response => response.arrayBuffer())
@@ -30,6 +47,9 @@
                 source.buffer = audioBuffer;
                 source.connect(audioContext.destination);
                 source.start();
+            })
+            .catch(error => {
+                console.log('Error loading audio file:', error);
             });
     });
     
@@ -37,3 +57,8 @@
 
 <h1 id="clock"></h1>
 <h1 id="queue-state">Jobs queued [0]</h1>
+<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a>
+
+
+
+

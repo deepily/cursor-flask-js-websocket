@@ -16,7 +16,7 @@ The project has the following structure:
 1. Clone this repository.
 2. Install the dependencies by running `pip install -r requirements.txt`.
 3. Run the server by executing `python clock.py`.
-4. Open your web browser and navigate to `http://localhost:5000`.
+4. Open your web browser and navigate to `http://127.0.0.1:5000/static/clock.html`.
 
 ## Usage
 

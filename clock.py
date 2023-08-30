@@ -77,14 +77,16 @@ def background_thread():
         socketio.sleep(2)
 
 """
-Serve clock file
+Serve static files
 """
-@app.route('/clock')
-def index():
-    return app.send_static_file('clock.html')
+@app.route('/static/<filename>')
+def serve_static(filename):
+
+    return app.send_static_file(filename)
 
 @app.route('/push', methods=['GET'])
 def push():
+
     job_name = request.args.get('job_name')
     print( job_name )
     job_name = f'{job_queue.get_push_count() + 1 }th job: {job_name}'
@@ -94,6 +96,7 @@ def push():
 
 @app.route('/pop', methods=['GET'])
 def pop():
+
     popped_job = job_queue.pop()
     return f'Job [{popped_job}] popped from stack. Stack size [{job_queue.size()}]'
  
@@ -103,6 +106,7 @@ Decorator for connect
 """
 @socketio.on('connect')
 def connect():
+
     global thread
     print('Client connected')
 
@@ -116,6 +120,7 @@ Decorator for disconnect
 """
 @socketio.on('disconnect')
 def disconnect():
+    
     print('Client disconnected',  request.sid)
 
 if __name__ == '__main__':

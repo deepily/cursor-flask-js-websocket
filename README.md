@@ -30,6 +30,7 @@ The project has the following structure:
 - Flask-SocketIO==5.0.1
 - eventlet==0.30.2
 - Werkzeug==2.0.3
+- requests==2.31.0
 
 ## License
 

@@ -1,1 +1,5 @@
-_venv**
+# Leave out the virtual environment
+venv**
+
+# Skip the usual OS X detritus
+._**

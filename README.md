@@ -1,16 +1,14 @@
 # Flask SocketIO Demo
 
-This is a simple client-server application built using a browser-based JavaScript client and a RESTful Flask service. The application allows you to post text from the client to the server, and echoes that text back to the JavaScript client via a persistent web socket connection.
+This is a simple client-server application built using a browser-based JavaScript client and a RESTful Flask service. The application allows you to push & pop jobs from the client to/from the server's fifo queue. Whenever the queue is changed the status is pushed to the JavaScript client via a persistent web socket connection.
 
 ## Project Structure
 
 The project has the following structure:
 
-- `server.py`: This is the main server file that handles the client requests and websocket connections.
+- `clock.py`: This is the main server file that handles the client requests and websocket connections.
 - `requirements.txt`: This file lists all the Python dependencies that need to be installed.
-- `static/index.html`: This is the main HTML file that the user interacts with.
-- `static/js/main.js`: This file contains the JavaScript code for handling user input and websocket communication.
-- `static/css/styles.css`: This file contains the CSS styles for the HTML elements.
+- `static/clock.html`: This is the main HTML file that the user interacts with.
 - `README.md`: This file.
 
 ## Setup and Run
@@ -22,8 +20,9 @@ The project has the following structure:
 
 ## Usage
 
-1. Enter your text in the input field and click 'Send'.
-2. The server will echo your message and it will be displayed in the 'messages' section.
+1. Push your latest job text via http://127.0.0.1:5000/push?job_name=
+2. Pop the first job from the queue using: http://127.0.0.1:5000/pop
+3. The server will push updates to the client fifo queue (http://localhost:5000/clock) and updates will be displayed in the client's clock and Q state divs .
 
 ## Dependencies
 

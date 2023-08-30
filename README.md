@@ -32,6 +32,11 @@ The project has the following structure:
 - Werkzeug==2.0.3
 - requests==2.31.0
 
+## Special Permissions
+Firefox doesn't allow autoplay of media w/in a webpage without explicitly setting and allow all switch: https://support.mozilla.org/en-US/kb/block-autoplay
+
+Firefox extensions can, however, do autoplay because the following configurations flag defaults to true: `media.autoplay.allow-extension-background-pages`
+
 ## License
 
 This project is licensed under the terms of the MIT license.

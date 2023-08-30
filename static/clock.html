@@ -19,6 +19,19 @@
         // console.log('No change. Queue still the same size: ' + data.value + ', Date: ' + data.date);
         updateClock( data.date )
     });
+
+    socket.on('audio_file', function(data) {
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var source = audioContext.createBufferSource();
+        fetch(data.audioURL)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+            .then(audioBuffer => {
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start();
+            });
+    });
     
 </script>
 

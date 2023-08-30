@@ -1,0 +1,26 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+
+<script>
+    var socket = io();
+    socket.on('connect', function() {
+        console.log('Connected to Flask server');
+    });
+
+    function updateClock(date) {
+        document.getElementById('clock').innerHTML = "Current time [" + date + "]";
+    }
+    socket.on('time_update', function(data) {
+        var date = data.date;
+        var value = data.value
+        document.getElementById('queue-state').innerHTML = "Jobs queued [" + value + "] @ [" + date + "]";
+        updateClock( date )
+    });
+    socket.on('no_change', function(data) {
+        // console.log('No change. Queue still the same size: ' + data.value + ', Date: ' + data.date);
+        updateClock( data.date )
+    });
+    
+</script>
+
+<h1 id="clock"></h1>
+<h1 id="queue-state">Jobs queued [0]</h1>

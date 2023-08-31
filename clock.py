@@ -67,6 +67,7 @@ Track the done Q
 def track_done_thread():
 
     print("Tracking job DONE queue size...")
+    print("Tracking job DONE queue size...")
     while True:
 
         print( uj.get_current_datetime() )
@@ -99,6 +100,8 @@ def track_running_thread():
             
             print( "popping one job from todo Q" )
             job = jobs_todo_queue.pop()
+            job.complete( "I don't know, beats the hell out of me!", [ "foo = 31", "bar = 17", "total = foo + bar", "total" ], "I did this and then I did that, and then something else." )
+            print( job.to_json() )
             jobs_done_queue.push( job )
 
         else:
@@ -120,7 +123,7 @@ def push():
     question = request.args.get('question')
     job = Job(question)
     
-    print( job.__str__ )
+    print( job.to_json() )
     
     jobs_todo_queue.push(job)
     return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'    

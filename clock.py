@@ -6,44 +6,10 @@ from random import random
 from threading import Lock
 from datetime import datetime
 
-from datetime import datetime
+from fifo_queue import FifoQueue
 
 """
-First In First Out Queue
-"""
-class FifoQueue:
-
-    def __init__(self):
-        self.queue = []
-        self.last_queue_size = 0
-        self.push_count = 0
-
-    def push(self, item):
-        self.queue.append(item)
-        self.push_count += 1
-
-    def get_push_count(self):
-        return self.push_count
-
-    def pop(self):
-        if not self.is_empty():
-            return self.queue.pop( 0 )
-
-    def is_empty(self):
-        return len(self.queue) == 0
-
-    def size(self):
-        return len(self.queue)
-
-    def has_changed(self):
-        if self.size() != self.last_queue_size:
-            self.last_queue_size = self.size()
-            return True
-        else:
-            return False
-
-"""
-Globally visible stack object
+Globally visible queue object
 """
 job_queue = FifoQueue()
 
@@ -113,8 +79,10 @@ def get_audio():
 
     tts_text = request.args.get('tts_text')
     tts_url  = "http://127.0.0.1:5002/api/tts?text=" + tts_text
+    tts_text = tts_text.replace( " ", "+" )
 
     print( "Fetching:", tts_url )
+    
     response = requests.get(tts_url)
     path     = "audio/tts.wav"
 
@@ -136,9 +104,7 @@ Decorator for connect
 @socketio.on('connect')
 def connect():
 
-    global thread
     print('Client connected')
-
     global thread
     with thread_lock:
         if thread is None:

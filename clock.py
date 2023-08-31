@@ -7,48 +7,104 @@ from threading import Lock
 from datetime import datetime
 
 from fifo_queue import FifoQueue
+from job import Job
+import util_jobs as uj
 
 """
 Globally visible queue object
 """
-job_queue = FifoQueue()
+jobs_todo_queue = FifoQueue()
+jobs_done_queue = FifoQueue()
 
 """
-Background Thread
+Background Threads
 """
-thread = None
+todo_thread = None
+done_thread = None
+run_thread  = None
 thread_lock = Lock()
+
+announcement_delay = 0
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 app.config['SERVER_NAME'] = '127.0.0.1:5000' 
 
-"""
-Get current date time
-"""
-def get_current_datetime():
-    now = datetime.now()
-    return now.strftime("%m/%d/%Y %H:%M:%S")
 
 """
-Generate random sequence of dummy sensor values and send it to our clients
+Track the todo Q
 """
-def background_thread():
-    print("Tracking job queue size...")
+def track_todo_thread():
+
+    print("Tracking job TODO queue size...")
     while True:
-        print( get_current_datetime() )
-        if job_queue.has_changed():
-            print( "Q size has changed" )
-            socketio.emit('time_update', {'value': job_queue.size(), "date": get_current_datetime()})
+        
+        print( uj.get_current_datetime() )
+        socketio.emit('time_update', {"date": uj.get_current_datetime()})
+
+        if jobs_todo_queue.has_changed():
+
+            print( "TODO Q size has changed" )
+            socketio.emit('todo_update', {'value': jobs_todo_queue.size()})
+
             with app.app_context():
-                url = url_for('get_audio') + f"?tts_text={job_queue.size()} jobs waiting"
-            print( f"Emitting url [{url}]..." )
-            socketio.emit('audio_file', {'audioURL': url})
+                url = url_for('get_audio') + f"?tts_text={jobs_todo_queue.size()} jobs waiting"
+
+            print( f"Emitting TODO url [{url}]..." )
+            socketio.emit('audio_update', {'audioURL': url})
+            announcement_delay = 2
         else:
-            socketio.emit('no_change', {'value': job_queue.size(), "date": get_current_datetime()})
+            announcement_delay = 0
+        # else:
+        #     socketio.emit('time_update', {'value': jobs_todo_queue.size(), "date": uj.get_current_datetime()})
 
         socketio.sleep(2)
+
+"""
+Track the done Q
+"""
+def track_done_thread():
+
+    print("Tracking job DONE queue size...")
+    while True:
+
+        print( uj.get_current_datetime() )
+        socketio.emit('time_update', {"date": uj.get_current_datetime()})
+
+        if jobs_done_queue.has_changed():
+
+            print( "Done Q size has changed" )
+            socketio.emit('done_update', {'value': jobs_done_queue.size()})
+
+            with app.app_context():
+                url = url_for('get_audio') + f"?tts_text={jobs_done_queue.size()} jobs finished"
+
+            print( f"Emitting DONE url [{url}]..." )
+            socketio.sleep( announcement_delay )
+            socketio.emit('audio_update', {'audioURL': url})
+        # else:
+        #     socketio.emit('no_change', {'value': jobs_done_queue.size(), "date": uj.get_current_datetime()})
+
+        socketio.sleep(3)
+
+def track_running_thread():
+
+    print("Simulating job run execution...")
+    while True:
+        
+        print( "Jobs running @ " + uj.get_current_datetime() )
+        
+        if not jobs_todo_queue.is_empty():
+            
+            print( "popping one job from todo Q" )
+            job = jobs_todo_queue.pop()
+            jobs_done_queue.push( job )
+
+        else:
+            print( "no jobs to pop from todo Q " )
+
+        socketio.sleep( 10 )
 
 """
 Serve static files
@@ -61,18 +117,19 @@ def serve_static(filename):
 @app.route('/push', methods=['GET'])
 def push():
 
-    job_name = request.args.get('job_name')
-    print( job_name )
-    job_name = f'{job_queue.get_push_count() + 1 }th job: {job_name}'
+    question = request.args.get('question')
+    job = Job(question)
     
-    job_queue.push(job_name)
-    return f'Job [{job_name}] added to stack. Stack size [{job_queue.size()}]'    
+    print( job.__str__ )
+    
+    jobs_todo_queue.push(job)
+    return f'Job [{question}] added to queue. queue size [{jobs_todo_queue.size()}]'    
 
 @app.route('/pop', methods=['GET'])
 def pop():
 
-    popped_job = job_queue.pop()
-    return f'Job [{popped_job}] popped from stack. Stack size [{job_queue.size()}]'
+    popped_job = jobs_todo_queue.pop()
+    return f'Job [{popped_job}] popped from queue. queue size [{jobs_todo_queue.size()}]'
  
 @app.route('/get_audio')
 def get_audio():
@@ -105,10 +162,12 @@ Decorator for connect
 def connect():
 
     print('Client connected')
-    global thread
+    global todo_thread
     with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(background_thread)
+        if todo_thread is None:
+            todo_thread = socketio.start_background_task(track_todo_thread)
+            done_thread = socketio.start_background_task(track_done_thread)
+            exec_thread = socketio.start_background_task(track_running_thread)
 
 """
 Decorator for disconnect

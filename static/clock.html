@@ -28,16 +28,21 @@
     }
     socket.on('time_update', function(data) {
         var date = data.date;
-        var value = data.value
-        document.getElementById('queue-state').innerHTML = "Jobs queued [" + value + "] @ [" + date + "]";
+        // document.getElementById('queue-state').innerHTML = "Time [" + date + "]";
         updateClock( date )
     });
-    socket.on('no_change', function(data) {
-        // console.log('No change. Queue still the same size: ' + data.value + ', Date: ' + data.date);
-        updateClock( data.date )
+    socket.on('todo_update', function(data) {
+        document.getElementById('todo').innerHTML = "Jobs TODO [" + data.value + "]";
     });
+    socket.on('done_update', function(data) {
+        document.getElementById('done').innerHTML = "Jobs DONE [" + data.value + "]";
+    });
+    // socket.on('no_change', function(data) {
+    //     // console.log('No change. Queue still the same size: ' + data.value + ', Date: ' + data.date);
+    //     updateClock( data.date )
+    // });
 
-    socket.on('audio_file', function(data) {
+    socket.on('audio_update', function(data) {
   
         var source = audioContext.createBufferSource();
         fetch(data.audioURL)
@@ -56,7 +61,8 @@
 </script>
 
 <h1 id="clock"></h1>
-<h1 id="queue-state">Jobs queued [0]</h1>
+<h1 id="todo">Jobs todo [0]</h1>
+<h1 id="done">Jobs done [0]</h1>
 <a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a>
 
 

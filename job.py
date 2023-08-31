@@ -1,3 +1,4 @@
+import json
 import util_jobs as uj
 
 class Job:
@@ -8,10 +9,10 @@ class Job:
         self.completion_date  = None
         self.question         = question
         self.answer           = None
-        self.code             = None
+        self.code             = []
         self.solution_summary = None
 
-    def complete(self, answer, code, solution_summary ):
+    def complete(self, answer, code=[], solution_summary="" ):
 
         self.answer           = answer
         self.code             = code
@@ -20,15 +21,17 @@ class Job:
 
     def __str__(self):
 
-        return {
+        return str({
             "creation_date"   : self.creation_date,
             "completion_date" : self.completion_date,
             "question"        : self.question,
             "answer"          : self.answer,
             "code"            : self.code,
             "solution_summary": self.solution_summary
-        }
-    
+        })
+    def to_json(self):
+        
+        return json.dumps( self.__dict__ )
     
     
 

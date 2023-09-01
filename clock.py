@@ -1,3 +1,4 @@
+import json
 import requests
 
 from flask import Flask, render_template, request, send_file, url_for
@@ -100,7 +101,7 @@ def track_running_thread():
             
             print( "popping one job from todo Q" )
             job = jobs_todo_queue.pop()
-            job.complete( "I don't know, beats the hell out of me!", [ "foo = 31", "bar = 17", "total = foo + bar", "total" ], "I did this and then I did that, and then something else." )
+            job.complete( "I don't know, beats the hell out of me!" )
             print( job.to_json() )
             jobs_done_queue.push( job )
 
@@ -157,6 +158,27 @@ def get_audio():
         # return None
 
     return send_file( path, mimetype='audio/wav')
+
+def generate_html_list(fifo_queue):
+    
+    html_list = []
+    for job in fifo_queue.queue:
+        html_list.append( job.get_html() )
+    
+    return html_list
+
+@app.route('/get_queue/<queue_name>', methods=['GET'])
+def get_queue(queue_name):
+
+    if queue_name == "todo":
+        jobs = generate_html_list( jobs_todo_queue )
+    elif queue_name == "done":
+        jobs = generate_html_list( jobs_done_queue  )
+    else:
+        return json.dumps({"error": "Invalid queue name. Please specify either 'todo' or 'done'."})
+
+    return json.dumps({f"{queue_name}_jobs": jobs})
+
 
 """
 Decorator for connect

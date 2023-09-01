@@ -34,6 +34,14 @@ class Job:
         
         return json.dumps( self.__dict__ )
     
+    def get_html(self):
+        
+        if self.answer is not None:
+            return f"<li>Q: {self.question}. A: {self.answer}</li>"
+        else:
+            return f"<li>Q: {self.question}</li>"
+    
+    
     
 
     

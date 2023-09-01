@@ -33,14 +33,24 @@
     });
     socket.on('todo_update', function(data) {
         document.getElementById('todo').innerHTML = "Jobs TODO [" + data.value + "]";
+        fetch('/get_queue/todo')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('todo-list').innerHTML = data.todo_jobs.join("");
+            })
+            .catch(error => console.error('Error:', error));
     });
+
     socket.on('done_update', function(data) {
         document.getElementById('done').innerHTML = "Jobs DONE [" + data.value + "]";
+        fetch('/get_queue/done')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('done-list').innerHTML = data.done_jobs.join("");
+            })
+            .catch(error => console.error('Error:', error));
     });
-    // socket.on('no_change', function(data) {
-    //     // console.log('No change. Queue still the same size: ' + data.value + ', Date: ' + data.date);
-    //     updateClock( data.date )
-    // });
+    
 
     socket.on('audio_update', function(data) {
   
@@ -61,9 +71,21 @@
 </script>
 
 <h1 id="clock"></h1>
-<h1 id="todo">Jobs todo [0]</h1>
-<h1 id="done">Jobs done [0]</h1>
-<a href="#" onclick="createAudioContext(); return false;">Enable audio playback</a>
+
+<div>
+    <h2 id="todo">Jobs todo [0]</h2>
+    <ol id="todo-list">
+        
+    </ol>
+</div>
+
+<div>
+    <h2 id="done">Jobs done [0]</h2>
+    <ol id="done-list">
+
+    </ol>
+</div>
+<a href="#" onclick="createAudioContext(); return false;">Enable audio playback: Use this if auto play is disabled. Check about:preferences 'Autoplay' </a>
 
 
 

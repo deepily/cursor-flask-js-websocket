@@ -29,6 +29,7 @@ class Job:
             "code"            : self.code,
             "solution_summary": self.solution_summary
         })
+    
     def to_json(self):
         
         return json.dumps( self.__dict__ )

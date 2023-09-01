@@ -41,6 +41,17 @@
             .catch(error => console.error('Error:', error));
     });
 
+    socket.on('run_update', function(data) {
+        document.getElementById('run').innerHTML = "Jobs RUNNING [" + data.value + "]";
+        fetch('/get_queue/run')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('run-list').innerHTML = data.run_jobs.join("");
+            })
+            .catch(error => console.error('Error:', error));
+    });
+    
+
     socket.on('done_update', function(data) {
         document.getElementById('done').innerHTML = "Jobs DONE [" + data.value + "]";
         fetch('/get_queue/done')
@@ -78,7 +89,12 @@
         
     </ol>
 </div>
+<div>
+    <h2 id="run">Jobs running [0]</h2>
+    <ol id="run-list">
 
+    </ol>
+</div>
 <div>
     <h2 id="done">Jobs done [0]</h2>
     <ol id="done-list">

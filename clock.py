@@ -16,6 +16,7 @@ Globally visible queue object
 """
 jobs_todo_queue = FifoQueue()
 jobs_done_queue = FifoQueue()
+jobs_run_queue  = FifoQueue()
 
 """
 Background Threads
@@ -101,9 +102,32 @@ def track_running_thread():
             
             print( "popping one job from todo Q" )
             job = jobs_todo_queue.pop()
-            job.complete( "I don't know, beats the hell out of me!" )
-            print( job.to_json() )
-            jobs_done_queue.push( job )
+
+            jobs_run_queue.push( job )
+            
+            socketio.emit('run_update', {'value': jobs_run_queue.size()})
+
+            with app.app_context():
+                url = url_for('get_audio') + f"?tts_text={jobs_run_queue.size()} jobs running"
+
+            print( f"Emitting RUN url [{url}]..." )
+            socketio.emit('audio_update', {'audioURL': url})
+
+            # running_job = jobs_run_queue.pop()
+            print("Executing job... " )
+            # Point to (NOT pop) the job at the head of the queue
+            running_job = jobs_run_queue.head()
+
+            socketio.sleep( 5 )
+            
+            running_job.complete( "I don't know, beats the hell out of me!" )
+            print("Executing job... Done!")
+            print( running_job.to_json() )
+            jobs_done_queue.push(running_job)
+
+            # Remove the job at the head of the queue
+            jobs_run_queue.pop()
+            socketio.emit('run_update', {'value': jobs_run_queue.size()})
 
         else:
             print( "no jobs to pop from todo Q " )
@@ -174,6 +198,8 @@ def get_queue(queue_name):
         jobs = generate_html_list( jobs_todo_queue )
     elif queue_name == "done":
         jobs = generate_html_list( jobs_done_queue  )
+    elif queue_name == "run":
+        jobs = generate_html_list( jobs_run_queue )        
     else:
         return json.dumps({"error": "Invalid queue name. Please specify either 'todo' or 'done'."})
 

@@ -28,7 +28,6 @@
     }
     socket.on('time_update', function(data) {
         var date = data.date;
-        // document.getElementById('queue-state').innerHTML = "Time [" + date + "]";
         updateClock( date )
     });
     socket.on('todo_update', function(data) {
@@ -81,7 +80,7 @@
     
 </script>
 
-<h1 id="clock"></h1>
+<h1 id="clock">Current time [00-00-0000 @ 00:00:00]</h1>
 
 <div>
     <h2 id="todo">Jobs todo [0]</h2>

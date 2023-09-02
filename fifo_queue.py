@@ -27,6 +27,9 @@ class FifoQueue:
     def size(self):
         return len(self.queue)
 
+    def reset_change_flag(self):
+        self.last_queue_size = self.size()
+    
     def has_changed(self):
         if self.size() != self.last_queue_size:
             self.last_queue_size = self.size()

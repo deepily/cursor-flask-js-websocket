@@ -1,11 +1,15 @@
+import hashlib
 import json
 import util_jobs as uj
 
 class Job:
 
-    def __init__(self, question):
+    def __init__(self, push_counter, question):
 
+        self.push_counter     = push_counter
         self.creation_date    = uj.get_current_datetime()
+        self.id_hash          = hashlib.sha256((str(self.push_counter) + self.creation_date).encode()).hexdigest()
+        
         self.completion_date  = None
         self.question         = question
         self.answer           = None
@@ -37,9 +41,9 @@ class Job:
     def get_html(self):
         
         if self.answer is not None:
-            return f"<li>{self.creation_date} Q: {self.question}. A: {self.answer}</li>"
+            return f"<li id='{self.id_hash}'>{self.creation_date} Q: {self.question} A: {self.answer}</li>"
         else:
-            return f"<li>{self.creation_date} Q: {self.question}</li>"
+            return f"<li id='{self.id_hash}'>{self.creation_date} Q: {self.question}</li>"
     
 # Gratuitous change to test git
     

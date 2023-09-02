@@ -37,9 +37,9 @@ class Job:
     def get_html(self):
         
         if self.answer is not None:
-            return f"<li>Q: {self.question}. A: {self.answer}</li>"
+            return f"<li>{self.creation_date} Q: {self.question}. A: {self.answer}</li>"
         else:
-            return f"<li>Q: {self.question}</li>"
+            return f"<li>{self.creation_date} Q: {self.question}</li>"
     
     
     

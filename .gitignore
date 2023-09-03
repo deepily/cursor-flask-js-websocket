@@ -3,6 +3,7 @@ venv**
 
 # Skip the usual OS X detritus
 ._**
+.DS_Store
 
 # Don't track local audio files
 audio**

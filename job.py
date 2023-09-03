@@ -41,7 +41,13 @@ class Job:
     def get_html(self):
         
         if self.answer is not None:
-            return f"<li id='{self.id_hash}'>{self.creation_date} Q: {self.question} A: {self.answer}</li>"
+            
+            if len(self.answer) > 32:
+                self.answer_short = self.answer[:16] + "..."
+            else:
+                self.answer_short = self.answer
+            
+            return f"<li id='{self.id_hash}'>{self.creation_date} Q: {self.question} A: {self.answer_short}</li>"
         else:
             return f"<li id='{self.id_hash}'>{self.creation_date} Q: {self.question}</li>"
     

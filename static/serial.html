@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Serial MP3 Player</title>
+</head>
+<body>
+  <h1>Serial MP3 Player</h1>
+  <script>
+
+    let urls = [ "/static/gentle-gong.mp3", "/get_audio?tts_text=give it to me one time, bang", "/static/gentle-gong.mp3", "/get_audio?tts_text=hit me two times, bang bang" ];
+    let queue = [];
+    for ( var i = 0; i < urls.length; i++) {
+        console.log(urls[ i ] );
+        let audio = new Audio(urls[ i ]);
+        queue.push(audio);
+    }
+    
+    async function foo( audio ) {
+        
+        console.log( "foo() called...", audio );
+
+        return new Promise(function(resolve, reject) { 
+            audio.onerror = reject;                    
+            audio.onended = resolve;                   
+            audio.play()
+        });
+    }
+    
+    async function doFoo() {
+
+        while ( queue.length > 0 ) {
+
+            let audio = queue.shift();
+            console.log( "calling foo()..." )
+            await foo( audio ).then(function() {
+                console.log( "calling foo()... Done!" );
+            })
+        }
+    }
+    doFoo();
+
+  </script>
+</body>
+</html>

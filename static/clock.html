@@ -24,7 +24,7 @@
     });
 
     function updateClock(date) {
-        document.getElementById('clock').innerHTML = "Current time [" + date + "]";
+        document.getElementById('clock').innerHTML = "[" + date + "]";
     }
     socket.on('time_update', function(data) {
         var date = data.date;
@@ -60,8 +60,7 @@
             })
             .catch(error => console.error('Error:', error));
     });
-    
-
+        
     socket.on('audio_update', function(data) {
   
         var source = audioContext.createBufferSource();
@@ -77,11 +76,10 @@
                 console.log('Error loading audio file:', error);
             });
     });
-    
-    // Gratuitous change to test git
+
 </script>
 
-<h1 id="clock">Current time [00-00-0000 @ 00:00:00]</h1>
+<h1 id="clock">[00-00-0000 @ 00:00:00]</h1>
 
 <div>
     <h2 id="todo">Jobs todo [0]</h2>

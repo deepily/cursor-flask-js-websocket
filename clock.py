@@ -36,7 +36,7 @@ app.config['SERVER_NAME'] = '127.0.0.1:5000'
 """
 Track the todo Q
 """
-def clock_thread():
+def enter_clock_loop():
 
     print("Tracking job TODO queue size...")
     while True:
@@ -45,7 +45,7 @@ def clock_thread():
         socketio.emit('time_update', {"date": uj.get_current_datetime()})
         socketio.sleep(1)
 
-def track_running_thread():
+def enter_running_loop():
 
     print("Simulating job run execution...")
     while True:
@@ -189,8 +189,8 @@ def connect():
     global clock_thread
     with thread_lock:
         if clock_thread is None:
-            clock_thread = socketio.start_background_task(clock_thread)
-            exec_thread = socketio.start_background_task(track_running_thread)
+            clock_thread = socketio.start_background_task(enter_clock_loop)
+            exec_thread  = socketio.start_background_task(enter_running_loop)
 
 """
 Decorator for disconnect

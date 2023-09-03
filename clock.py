@@ -99,10 +99,10 @@ def serve_static(filename):
 def push():
 
     global push_count
+    push_count += 1
 
     question = request.args.get('question')
     job = Job(push_count, question)
-    push_count += 1
     
     print( job.to_json() )
     
@@ -159,8 +159,7 @@ def generate_html_list(fifo_queue, descending=False):
     for job in fifo_queue.queue:
         html_list.append( job.get_html() )
     
-    if descending:
-        html_list.reverse()
+    if descending: html_list.reverse()
     
     return html_list
 

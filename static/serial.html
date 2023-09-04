@@ -17,8 +17,6 @@
     
     async function foo( audio ) {
         
-        console.log( "foo() called...", audio );
-
         return new Promise(function(resolve, reject) { 
             audio.onerror = reject;                    
             audio.onended = resolve;                   
